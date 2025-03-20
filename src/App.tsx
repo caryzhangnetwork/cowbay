@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { Layout, Menu, MenuProps } from 'antd';
-import Home from './pages/Home';
+import Home from './pages/Home/Home';
 import Calendar from './pages/Calendar';
 import StockSelect from './pages/StockSelect';
 import TradeSignals from './pages/TradeSignals';
