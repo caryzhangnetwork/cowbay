@@ -1,15 +1,15 @@
 // types/market.ts
 export interface Stock {
   name: string;
-  change: number; // 涨幅，单位：百分比
+  change: number;
 }
 
 export interface SectorRecord {
   name: string;
   redCount?: number;
   greenCount?: number;
-  volumeStocks?: Stock[]; // 修改为 Stock 对象数组
-  limitUpStocks?: string[]; // 保持不变，因为 limitUpStocks 仍是字符串数组
+  volumeStocks?: Stock[];
+  limitUpStocks?: string[];
 }
 
 export interface CurrentMarketData {
@@ -23,7 +23,32 @@ export interface CurrentMarketData {
 }
 
 export interface TrendSectorData {
-  "3days": { topGainers: SectorRecord[] };
-  "5days": { topGainers: SectorRecord[] };
-  "10days": { topGainers: SectorRecord[] };
+  topGainers: { day: string; name: string }[];
+  topLimitUp: { day: string; name: string }[];
+  topLimitDown: { day: string; name: string }[];
+  minLimitUp: { day: string; name: string }[];
+  minLimitDown: { day: string; name: string }[];
+  topRed: { day: string; name: string }[];
+  topGreen: { day: string; name: string }[];
+}
+
+export interface TrendMarketData {
+  days: string[];
+  data: {
+    index: number;
+    indexChange: number;
+    volumeIncrement: number;
+    redCount: number;
+    greenCount: number;
+    limitUpCount: number;
+    limitDownCount: number;
+    limitUp20cm: number;
+    limitDown20cm: number;
+    limitUp10cm: number;
+    limitDown10cm: number;
+    beijingGain: number;
+    beijingRedCount: number;
+    breakCount: number;
+    topBreakSectors: string[];
+  }[];
 }

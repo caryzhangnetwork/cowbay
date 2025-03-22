@@ -1,4 +1,4 @@
-import { CurrentMarketData, TrendSectorData } from "../types/market";
+import { CurrentMarketData, TrendSectorData, TrendMarketData } from "../types/market";
 
 // Mock 数据
 const currentSectorData = {
@@ -33,11 +33,7 @@ const currentOverviewData = {
   topBreakSectors: ["板块A", "板块B", "板块C", "板块D", "板块E"],
 };
 
-const trendSectorData = {
-  "3days": { topGainers: [{ name: "板块A" }], topLimitUp: [{ name: "板块B" }], /* 其他字段 */ },
-  "5days": { topGainers: [{ name: "板块C" }], topLimitUp: [{ name: "板块D" }], /* 其他字段 */ },
-  "10days": { topGainers: [{ name: "板块E" }], topLimitUp: [{ name: "板块F" }], /* 其他字段 */ },
-};
+
 
 const trendOverviewData = {
   "3days": [{ date: "2025-03-17", index: 3200, indexChange: -5, /* 其他字段 */ }],
@@ -53,40 +49,53 @@ export const getCurrentOverview = async () => {
 export const getTrendSector = async (
   timeRange: "3days" | "5days" | "10days"
 ): Promise<TrendSectorData> => {
-  // Mock 数据，模拟趋势板块数据
-  const trendSectorData: TrendSectorData = {
-    "3days": {
-      topGainers: [
-        { name: "科技板块" },
-        { name: "金融板块" },
-        { name: "消费板块" },
-        { name: "医药板块" },
-        { name: "能源板块" },
-      ],
-    },
-    "5days": {
-      topGainers: [
-        { name: "医药板块" },
-        { name: "消费板块" },
-        { name: "科技板块" },
-        { name: "金融板块" },
-        { name: "地产板块" },
-      ],
-    },
-    "10days": {
-      topGainers: [
-        { name: "能源板块" },
-        { name: "科技板块" },
-        { name: "医药板块" },
-        { name: "消费板块" },
-        { name: "金融板块" },
-      ],
-    },
+  // Mock 数据，模拟连续多天的趋势数据
+  const days = {
+    "3days": 3,
+    "5days": 5,
+    "10days": 10,
+  }[timeRange];
+
+  const allData = [
+    ["科技板块", "医药板块", "能源板块", "金融板块", "消费板块", "地产板块", "新能源板块", "基建板块", "汽车板块", "教育板块"],
+    ["医药板块", "消费板块", "科技板块", "金融板块", "地产板块", "能源板块", "新能源板块", "基建板块", "汽车板块", "教育板块"],
+    ["能源板块", "科技板块", "医药板块", "消费板块", "金融板块", "地产板块", "新能源板块", "基建板块", "汽车板块", "教育板块"],
+    ["金融板块", "医药板块", "消费板块", "科技板块", "能源板块", "地产板块", "新能源板块", "基建板块", "汽车板块", "教育板块"],
+    ["消费板块", "金融板块", "科技板块", "医药板块", "能源板块", "地产板块", "新能源板块", "基建板块", "汽车板块", "教育板块"],
+    ["地产板块", "消费板块", "金融板块", "科技板块", "医药板块", "能源板块", "新能源板块", "基建板块", "汽车板块", "教育板块"],
+    ["新能源板块", "地产板块", "消费板块", "金融板块", "科技板块", "医药板块", "能源板块", "基建板块", "汽车板块", "教育板块"],
+    ["基建板块", "新能源板块", "地产板块", "消费板块", "金融板块", "科技板块", "医药板块", "能源板块", "汽车板块", "教育板块"],
+    ["汽车板块", "基建板块", "新能源板块", "地产板块", "消费板块", "金融板块", "科技板块", "医药板块", "能源板块", "教育板块"],
+    ["教育板块", "汽车板块", "基建板块", "新能源板块", "地产板块", "消费板块", "金融板块", "科技板块", "医药板块", "能源板块"],
+  ];
+
+  const generateData = (offset: number) => {
+    const result: { day: string; name: string }[] = [];
+    for (let i = 0; i < days; i++) {
+      const dayIndex = (i + offset) % 10;
+      result.push(
+        { day: `Day ${i + 1}`, name: allData[dayIndex][0] },
+        { day: `Day ${i + 1}`, name: allData[dayIndex][1] },
+        { day: `Day ${i + 1}`, name: allData[dayIndex][2] },
+        { day: `Day ${i + 1}`, name: allData[dayIndex][3] },
+        { day: `Day ${i + 1}`, name: allData[dayIndex][4] }
+      );
+    }
+    return result;
   };
 
-  // 返回完整的 TrendSectorData 对象，而不是子对象
+  const trendSectorData: TrendSectorData = {
+    topGainers: generateData(0),
+    topLimitUp: generateData(1),
+    topLimitDown: generateData(2),
+    minLimitUp: generateData(3),
+    minLimitDown: generateData(4),
+    topRed: generateData(5),
+    topGreen: generateData(6),
+  };
+
   return new Promise((resolve) => {
-    setTimeout(() => resolve(trendSectorData), 500); // 模拟异步请求
+    setTimeout(() => resolve(trendSectorData), 500);
   });
 };
 
@@ -416,5 +425,36 @@ export const getCurrentSector = async (): Promise<CurrentMarketData> => {
 
   return new Promise((resolve) => {
     setTimeout(() => resolve(currentSectorData), 500); // 模拟异步请求
+  });
+};
+
+
+export const getTrendMarket = async (
+  timeRange: "3days" | "5days" | "10days"
+): Promise<TrendMarketData> => {
+  const days = { "3days": 3, "5days": 5, "10days": 10 }[timeRange];
+  const trendMarketData: TrendMarketData = {
+    days: Array.from({ length: days }, (_, i) => `Day ${i + 1}`),
+    data: Array.from({ length: days }, (_, i) => ({
+      index: 3000 + i * 10 + Math.random() * 50, // 模拟指数
+      indexChange: (Math.random() - 0.5) * 2, // -1% 到 1%
+      volumeIncrement: 1000 + i * 100 + Math.random() * 200, // 模拟增量
+      redCount: 50 + Math.floor(Math.random() * 20),
+      greenCount: 40 + Math.floor(Math.random() * 20),
+      limitUpCount: 10 + Math.floor(Math.random() * 5),
+      limitDownCount: 5 + Math.floor(Math.random() * 5),
+      limitUp20cm: 2 + Math.floor(Math.random() * 3),
+      limitDown20cm: 1 + Math.floor(Math.random() * 2),
+      limitUp10cm: 8 + Math.floor(Math.random() * 4),
+      limitDown10cm: 4 + Math.floor(Math.random() * 3),
+      beijingGain: (Math.random() - 0.5) * 3, // -1.5% 到 1.5%
+      beijingRedCount: 15 + Math.floor(Math.random() * 10),
+      breakCount: 3 + Math.floor(Math.random() * 5),
+      topBreakSectors: ["科技板块", "医药板块", "能源板块"].slice(0, 3),
+    })),
+  };
+
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(trendMarketData), 500);
   });
 };
